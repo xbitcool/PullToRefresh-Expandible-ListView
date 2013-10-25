@@ -30,14 +30,14 @@ public class ListAdapter extends ArrayAdapter<HashMap <String,Object>>{
 		if (v == null) {
 			v = mInflater.inflate(R.layout.itemlist, null);
 			holder = new ViewHolder();
-            holder.menuName   = (TextView) v.findViewById(R.id.Name);
-            holder.menuDesc   = (TextView) v.findViewById(R.id.Descrip);
-            v.setTag(holder);
+             		holder.menuName   = (TextView) v.findViewById(R.id.Name);
+            		holder.menuDesc   = (TextView) v.findViewById(R.id.Descrip);
+            		v.setTag(holder);
 		}else{
 			holder = (ViewHolder) v.getTag();
 		}
 		HashMap<String,Object> itemHash = _xb_Items.get(position);
-	    v.setPadding(5,5,5,5);
+	    	v.setPadding(5,5,5,5);
 
 		if (itemHash != null){
 			//NAME
