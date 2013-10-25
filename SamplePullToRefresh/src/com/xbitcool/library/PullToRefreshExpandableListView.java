@@ -1,4 +1,4 @@
-package com.upsanet.androidupsanet.fragments.user;
+package com.xbitcool.library;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,14 +19,16 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class PullToRefreshListView extends ListView {
+import com.xbitcool.expandablepulltorefresh.R;
+
+public class PullToRefreshExpandableListView extends ExpandableListView {
 
     private static final float PULL_RESISTANCE                 = 1.7f;
     private static final int   BOUNCE_ANIMATION_DURATION       = 700;
@@ -51,6 +53,16 @@ public class PullToRefreshListView extends ListView {
          * Method to be called when a refresh is requested
          */
         public void onRefresh();
+        
+    }
+    
+    public interface OnChildClickListener{
+    	/*
+    	 * public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id);
+    	 */
+
+    	boolean onChildClick(PullToRefreshExpandableListView parent, View v, int groupPosition, int childPosition, long id);
+
     }
 
     private static int measuredHeaderHeight;
@@ -82,19 +94,20 @@ public class PullToRefreshListView extends ListView {
     private OnItemClickListener     onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private OnRefreshListener       onRefreshListener;
+    private OnChildClickListener    onChildClickListener;
 
 
-    public PullToRefreshListView(Context context){
+    public PullToRefreshExpandableListView(Context context){
         super(context);
         init();
     }
 
-    public PullToRefreshListView(Context context, AttributeSet attrs){
+    public PullToRefreshExpandableListView(Context context, AttributeSet attrs){
         super(context, attrs);
         init();
     }
 
-    public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle){
+    public PullToRefreshExpandableListView(Context context, AttributeSet attrs, int defStyle){
         super(context, attrs, defStyle);
         init();
     }
@@ -108,6 +121,10 @@ public class PullToRefreshListView extends ListView {
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener){
         this.onItemLongClickListener = onItemLongClickListener;
     }
+
+	public void setOnChildClickListener(OnChildClickListener onChildClickListener) {
+		this.onChildClickListener = onChildClickListener;
+	}
 
     /**
      * Activate an OnRefreshListener to get notified on 'pull to refresh'
@@ -250,6 +267,7 @@ public class PullToRefreshListView extends ListView {
 
         super.setOnItemClickListener(new PTROnItemClickListener());
         super.setOnItemLongClickListener(new PTROnItemLongClickListener());
+        super.setOnChildClickListener(new PTROnChildClickListener());
     }
 
     private void setHeaderPadding(int padding){
@@ -501,6 +519,28 @@ public class PullToRefreshListView extends ListView {
                 onItemClickListener.onItemClick(adapterView, view, position - getHeaderViewsCount(), id);
             }
         }
+    }
+    
+    private class PTROnChildClickListener implements OnChildClickListener, android.widget.ExpandableListView.OnChildClickListener{
+
+		@Override
+		public boolean onChildClick(PullToRefreshExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+			 hasResetHeader = false;
+			 
+			 if(onChildClickListener != null && state == State.PULL_TO_REFRESH){
+	                return onChildClickListener.onChildClick(parent, v, groupPosition, childPosition, id);//(parent, v, groupPosition, childPosition, id);
+	            }
+			 
+			return false;
+		}
+
+		@Override
+		public boolean onChildClick(ExpandableListView parent, View v,
+				int groupPosition, int childPosition, long id) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+    	
     }
 
     private class PTROnItemLongClickListener implements OnItemLongClickListener{
